@@ -18,6 +18,6 @@ public class RobotState {
     private String facing;
 
     public String toStrings(){
-       return " "+ x +" " + y + " " + facing;
+       return " "+ x +", " + y + ", " + facing;
     }
 }

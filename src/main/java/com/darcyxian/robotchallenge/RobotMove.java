@@ -5,32 +5,43 @@ import com.darcyxian.robotchallenge.exceptions.IncompletedPlaceException;
 import com.darcyxian.robotchallenge.exceptions.WrongCommandException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Darcy Xian  24/7/22  7:03 pm      RobotChallenge
  */
 public class RobotMove {
+    Map<String, RobotState> result = new HashMap<>();
+    RobotState activeRobotState;
+    Long robotTotalNum = 0L;
+    Long activeRobotNum = 0L;
 
     public void executeCommands(List<String> commands, RobotState robotState) {
         int index = commands.indexOf(Constant.PLACE);
+
         for (int i = index; i < commands.size(); i++) {
             switch (commands.get(i)) {
                 case Constant.PLACE:
-                    place(commands.get(i + 1), robotState);
+                    place(commands.get(i + 1));
                     i++;
                     break;
                 case Constant.MOVE:
-                    move(robotState);
+                    move();
                     break;
                 case Constant.LEFT:
-                    changeFacingLeft(robotState);
+                    changeFacingLeft();
                     break;
                 case Constant.RIGHT:
-                    changeFacingRight(robotState);
+                    changeFacingRight();
                     break;
                 case Constant.REPORT:
-                    report(robotState);
+                    report();
+                    break;
+                case Constant.ROBOT:
+                    activeExitingRobot(commands.get(i + 1));
+                    i++;
                     break;
                 default:
                     throw new WrongCommandException("WrongCommandException!  The commands above contains " + commands.get(i) + " can not be identified.");
@@ -38,55 +49,75 @@ public class RobotMove {
         }
     }
 
-    public void move(RobotState robotState) {
-
-        switch (robotState.getFacing()) {
-            case "EAST":
-                robotState.setX(robotState.getX() + 1);
-                break;
-            case "WEST":
-                robotState.setX(robotState.getX() - 1);
-                break;
-            case "NORTH":
-                robotState.setY(robotState.getY() + 1);
-                break;
-            case "SOUTH":
-                robotState.setY(robotState.getY() - 1);
-                break;
+    public void activeExitingRobot(String robotNum) {
+        saveCurrentRobotState();
+        RobotState existedState = result.get(robotNum);
+        if (existedState == null) {
+            throw new WrongCommandException("WrongCommandException! robot " + robotNum + " does not exist");
         }
-        positionSafetyCheck(robotState.getX(), robotState.getY());
+        activeRobotNum = Long.valueOf(robotNum);
+        activeRobotState = existedState;
     }
 
-    public void place(String position, RobotState robotState) {
+    public void move() {
+
+        switch (activeRobotState.getFacing()) {
+            case "EAST":
+                activeRobotState.setX(activeRobotState.getX() + 1);
+                break;
+            case "WEST":
+                activeRobotState.setX(activeRobotState.getX() - 1);
+                break;
+            case "NORTH":
+                activeRobotState.setY(activeRobotState.getY() + 1);
+                break;
+            case "SOUTH":
+                activeRobotState.setY(activeRobotState.getY() - 1);
+                break;
+        }
+        positionSafetyCheck(activeRobotState.getX(), activeRobotState.getY());
+    }
+
+
+    public void place(String position) {
+        saveCurrentRobotState();
+        activeRobotNum = ++robotTotalNum;
+        activeRobotState = new RobotState();
         String[] positionArr = position.split(",");
         placeDetailCheck(positionArr);
         int x = Integer.valueOf(positionArr[0]);
         int y = Integer.valueOf(positionArr[1]);
         if (positionSafetyCheck(x, y)) {
-            robotState.setX(x);
-            robotState.setY(y);
-            robotState.setFacing(positionArr[2]);
+            activeRobotState.setX(x);
+            activeRobotState.setY(y);
+            activeRobotState.setFacing(positionArr[2]);
         }
     }
 
-    public void changeFacingLeft(RobotState robotState) {
-        int directionIndex = Constant.directions.indexOf(robotState.getFacing());
+    public void saveCurrentRobotState() {
+        if (activeRobotNum != 0 && robotTotalNum != 0) {
+            result.put(String.valueOf(activeRobotNum), activeRobotState);
+        }
+    }
+
+    public void changeFacingLeft() {
+        int directionIndex = Constant.directions.indexOf(activeRobotState.getFacing());
         if (directionIndex == 0) {
             directionIndex = 3;
         } else {
             directionIndex--;
         }
-        changeFacing(directionIndex, robotState);
+        changeFacing(directionIndex, activeRobotState);
     }
 
-    public void changeFacingRight(RobotState robotState) {
-        int directListIndex = Constant.directions.indexOf(robotState.getFacing());
+    public void changeFacingRight() {
+        int directListIndex = Constant.directions.indexOf(activeRobotState.getFacing());
         if (directListIndex == 3) {
             directListIndex = 0;
         } else {
             directListIndex++;
         }
-        changeFacing(directListIndex, robotState);
+        changeFacing(directListIndex, activeRobotState);
     }
 
     public void changeFacing(int index, RobotState robotState) {
@@ -94,8 +125,16 @@ public class RobotMove {
         robotState.setFacing(newDirection);
     }
 
-    public void report(RobotState robotState) {
-        System.out.println("Output: " + robotState.toStrings());
+    public void report() {
+        saveCurrentRobotState();
+        int totalRobotNum = result.size();
+        System.out.println("There are " + totalRobotNum + " robot(s).   ROBOT" + activeRobotNum + " is in active.");
+        for (Map.Entry<String, RobotState> entry : result.entrySet()) {
+            String key = entry.getKey();
+            RobotState robotState = entry.getValue();
+            System.out.println("Output: ROBOT" + key + " " + robotState.toStrings());
+        }
+
     }
 
     public void placeDetailCheck(String[] placeDetail) {
@@ -107,7 +146,6 @@ public class RobotMove {
             legal = false;
         }
         if (StringUtils.isBlank(placeDetail[1]) || !StringUtils.isNumeric(placeDetail[1])) {
-            System.out.println("Sorry, PLACE Y is not correct , Please input again.");
             legal = false;
         }
         if (StringUtils.isBlank(placeDetail[2]) || !Constant.directions.contains(placeDetail[2])) {

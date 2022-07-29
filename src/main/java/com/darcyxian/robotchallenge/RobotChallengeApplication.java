@@ -19,13 +19,13 @@ public class RobotChallengeApplication {
         RobotState robotState = new RobotState();
         UserInput userInput = new UserInput();
         RobotMove robotMove = new RobotMove();
-        List<String> commandInput = userInput.getCommandInput();
-
-        try{
-            robotMove.executeCommands(commandInput,robotState);
-        }catch (RuntimeException e){
-            System.out.println(e.getMessage());
+        while(true){
+            List<String> commandInput = userInput.getCommandInput();
+            try{
+                robotMove.executeCommands(commandInput,robotState);
+            }catch (RuntimeException e){
+                System.out.println(e.getMessage());
+            }
         }
-
     }
 }

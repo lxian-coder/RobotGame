@@ -1,7 +1,7 @@
 package com.darcyxian.robotchallenge;
 
 import com.darcyxian.robotchallenge.exceptions.FallOffTableException;
-import com.darcyxian.robotchallenge.exceptions.IncompletedPlaceException;
+import com.darcyxian.robotchallenge.exceptions.IncompletePlaceException;
 import com.darcyxian.robotchallenge.exceptions.WrongCommandException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,12 +13,15 @@ import java.util.Map;
  * Darcy Xian  24/7/22  7:03 pm      RobotChallenge
  */
 public class RobotMove {
-    Map<String, RobotState> result = new HashMap<>();
+    Map<String, RobotState> result;
     RobotState activeRobotState;
-    Long robotTotalNum = 0L;
-    Long activeRobotNum = 0L;
+    Long robotTotalNum =0L;
+    Long activeRobotNum =0L;
 
-    public void executeCommands(List<String> commands, RobotState robotState) {
+    public void executeCommands(List<String> commands) {
+        result = new HashMap<>();
+        robotTotalNum = 0L;
+        activeRobotNum = 0L;
         int index = commands.indexOf(Constant.PLACE);
 
         for (int i = index; i < commands.size(); i++) {
@@ -40,7 +43,7 @@ public class RobotMove {
                     report();
                     break;
                 case Constant.ROBOT:
-                    activeExitingRobot(commands.get(i + 1));
+                    activeExistingRobot(commands.get(i + 1));
                     i++;
                     break;
                 default:
@@ -49,7 +52,7 @@ public class RobotMove {
         }
     }
 
-    public void activeExitingRobot(String robotNum) {
+    public void activeExistingRobot(String robotNum) {
         saveCurrentRobotState();
         RobotState existedState = result.get(robotNum);
         if (existedState == null) {
@@ -139,8 +142,9 @@ public class RobotMove {
 
     public void placeDetailCheck(String[] placeDetail) {
         boolean legal = true;
+        String message = "IncompletePlaceException! The commands above can not be executed, there is one PLACE command is not complete.";
         if (placeDetail.length != 3) {
-            legal = false;
+            throw new IncompletePlaceException(message);
         }
         if (StringUtils.isBlank(placeDetail[0]) || !StringUtils.isNumeric(placeDetail[0])) {
             legal = false;
@@ -152,7 +156,7 @@ public class RobotMove {
             legal = false;
         }
         if (!legal) {
-            throw new IncompletedPlaceException("IncompletedPlaceException! The commands above can not be executed, there is one PLACE command is not complete.");
+            throw new IncompletePlaceException(message);
         }
     }
 

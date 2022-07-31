@@ -16,13 +16,12 @@ public class RobotChallengeApplication {
 
     public static void main(String[] args) {
 
-        RobotState robotState = new RobotState();
         UserInput userInput = new UserInput();
         RobotMove robotMove = new RobotMove();
         while(true){
             List<String> commandInput = userInput.getCommandInput();
             try{
-                robotMove.executeCommands(commandInput,robotState);
+                robotMove.executeCommands(commandInput);
             }catch (RuntimeException e){
                 System.out.println(e.getMessage());
             }

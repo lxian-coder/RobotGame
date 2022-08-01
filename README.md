@@ -18,6 +18,7 @@
 * Either run the command to start the application: **java -jar ./build/libs/RobotChallenge-1.0-SNAPSHOT.jar**
 
 ## Test Data
+#### Please copy the test data and paste them to console to test this app.
 ### 1. test 1 robot situation 
 ```
 test

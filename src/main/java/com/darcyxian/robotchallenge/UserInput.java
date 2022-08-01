@@ -33,9 +33,6 @@ public class UserInput {
         List<String> inputList = new ArrayList<>(Arrays.asList(inputString.toString().split(" ")));
 
         inputList.removeAll(Collections.singletonList(""));
-        for (String a : inputList) {
-            System.out.println(a);
-        }
         return inputList;
     }
 
@@ -69,23 +66,22 @@ public class UserInput {
             System.out.println("Sorry, PLACE facing is not correct , Please input again.");
             return false;
         }
-        if(!checkRobotInputError(list)){
+        if (!checkRobotInputError(list)) {
             return false;
         }
-
         return true;
     }
 
-    public boolean checkRobotInputError(List<String> list){
+    public boolean checkRobotInputError(List<String> list) {
         boolean check = false;
-        for(String ele : list){
-            if(check){
-                if(StringUtils.isBlank(ele) && !StringUtils.isNumeric(ele)){
+        for (String ele : list) {
+            if (check) {
+                if (StringUtils.isBlank(ele) && !StringUtils.isNumeric(ele)) {
                     System.out.println("Sorry, ROBOT number is not correct , Please input again.");
                     return false;
                 }
             }
-            if(ele.equals(Constant.ROBOT)){
+            if (ele.equals(Constant.ROBOT)) {
                 check = true;
             }
         }

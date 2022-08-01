@@ -15,8 +15,8 @@ import java.util.Map;
 public class RobotMove {
     Map<String, RobotState> result;
     RobotState activeRobotState;
-    Long robotTotalNum =0L;
-    Long activeRobotNum =0L;
+    Long robotTotalNum = 0L;
+    Long activeRobotNum = 0L;
 
     public void executeCommands(List<String> commands) {
         result = new HashMap<>();

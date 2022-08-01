@@ -99,20 +99,20 @@ public class RobotMoveTest {
     void shouldInitializePositionGivenPositionString() {
         //Given
         String position = "1,0,NORTH";
-        String[] positionArr = {"1","0","NORTH"};
+        String[] positionArr = {"1", "0", "NORTH"};
         RobotMove robotMove1 = spy(robotMove);
-       doReturn(true).when(robotMove1).positionSafetyCheck(1,0);
-       doNothing().when(robotMove1).saveCurrentRobotState();
-       doNothing().when(robotMove1).placeDetailCheck(positionArr);
-       //When
-       robotMove1.place(position);
-       //Then
-        verify(robotMove1,times(1)).saveCurrentRobotState();
-        verify(robotMove1,times(1)).placeDetailCheck(positionArr);
+        doReturn(true).when(robotMove1).positionSafetyCheck(1, 0);
+        doNothing().when(robotMove1).saveCurrentRobotState();
+        doNothing().when(robotMove1).placeDetailCheck(positionArr);
+        //When
+        robotMove1.place(position);
+        //Then
+        verify(robotMove1, times(1)).saveCurrentRobotState();
+        verify(robotMove1, times(1)).placeDetailCheck(positionArr);
     }
 
     @Test
-    void shouldActiveRobotGivenRobotNumber(){
+    void shouldActiveRobotGivenRobotNumber() {
         RobotState robotStateTest = new RobotState();
         robotStateTest.setX(1);
         robotStateTest.setY(0);
@@ -124,46 +124,49 @@ public class RobotMoveTest {
         //Given
         robotMove1.activeExistingRobot("1");
         //Then
-        verify(robotMove1,times(1)).saveCurrentRobotState();
-        verify(resultMap,times(1)).get("1");
+        verify(robotMove1, times(1)).saveCurrentRobotState();
+        verify(resultMap, times(1)).get("1");
     }
 
     @Test
-    void shouldThrowExceptionGivenNonExistedRobotNum(){
+    void shouldThrowExceptionGivenNonExistedRobotNum() {
         RobotMove robotMove1 = spy(robotMove);
         doNothing().when(robotMove1).saveCurrentRobotState();
         doReturn(null).when(resultMap).get("1");
 
-        assertThrows(WrongCommandException.class,()->robotMove1.activeExistingRobot("1"));
+        assertThrows(WrongCommandException.class, () -> robotMove1.activeExistingRobot("1"));
     }
-   @Test
-    void shouldChangeRobotStateGivenMoveOrder(){
+
+    @Test
+    void shouldChangeRobotStateGivenMoveOrder() {
         //Given
         RobotMove robotMove1 = spy(robotMove);
         doReturn("NORTH").when(activeRobotState).getFacing();
         doReturn(1).when(activeRobotState).getX();
         doReturn(2).when(activeRobotState).getY();
-        doReturn(true).when(robotMove1).positionSafetyCheck(1,2);
+        doReturn(true).when(robotMove1).positionSafetyCheck(1, 2);
         //When
         robotMove1.move();
         //Then
-        verify(robotMove1,times(1)).positionSafetyCheck(1,2);
-        verify(activeRobotState,times(1)).setY(3);
-   }
-   @Test
-    void shouldExecutePlaceGivenPlaceCommand(){
+        verify(robotMove1, times(1)).positionSafetyCheck(1, 2);
+        verify(activeRobotState, times(1)).setY(3);
+    }
+
+    @Test
+    void shouldExecutePlaceGivenPlaceCommand() {
         List<String> commands = new ArrayList<>();
         commands.add("PLACE");
         commands.add("1,1,NORTH");
-        RobotMove robotMove1  = spy(robotMove);
+        RobotMove robotMove1 = spy(robotMove);
         doNothing().when(robotMove1).place("1,1,NORTH");
 
         robotMove1.executeCommands(commands);
 
-        verify(robotMove1,times(1)).place("1,1,NORTH");
-   }
-   @Test
-    void shouldThrowExceptionGivenWrongCommand(){
+        verify(robotMove1, times(1)).place("1,1,NORTH");
+    }
+
+    @Test
+    void shouldThrowExceptionGivenWrongCommand() {
         List<String> commands = new ArrayList<>();
         commands.add("PLACE");
         commands.add("1,1,NORTH");
@@ -171,7 +174,7 @@ public class RobotMoveTest {
         RobotMove robotMove1 = spy(robotMove);
         doNothing().when(robotMove1).place("1,1,NORTH");
 
-        assertThrows(WrongCommandException.class,()->robotMove1.executeCommands(commands));
+        assertThrows(WrongCommandException.class, () -> robotMove1.executeCommands(commands));
     }
 
 
